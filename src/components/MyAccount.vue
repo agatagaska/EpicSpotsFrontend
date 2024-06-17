@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="account-detail" v-if="user">
-      <h1>My Account Information</h1>
+      <h2>My Account Information</h2>
       <label><strong>Username:</strong> <input v-model="user.username" @input="checkChanges" class="input-field" /></label>
       <label><strong>Email:</strong> <input v-model="user.email" @input="checkChanges" class="input-field" /></label>
       <label><strong>First Name:</strong> <input v-model="user.firstName" @input="checkChanges" class="input-field" /></label>
@@ -19,14 +19,13 @@
         <label><strong>New Password:</strong> <input v-model="newPassword" type="password" class="input-field" /></label>
         <button @click="updatePassword" class="update-password-button">Update Password</button>
       </div>
-      <!--<button @click="deleteAccount" class="delete-button">Delete Account</button>-->
     </div>
     <div v-else class="loading">
       <p>Loading account details...</p>
       <p v-if="error">{{ error }}</p>
     </div>
     <div class="account-detail" v-if="bookings.length">
-      <h1>My Bookings</h1>
+      <h2>My Bookings</h2>
       <ul class="booking-list">
         <li v-for="booking in bookings" :key="booking.id" class="booking-item">
           <div class="booking-details">
@@ -34,6 +33,8 @@
             <p><strong>Location:</strong> {{ booking.campsite.location }}</p>
             <p><strong>Date:</strong> {{ formatDate(booking.startDate) }} - {{ formatDate(booking.endDate) }}</p>
             <p><strong>Guests:</strong> {{ booking.numberOfGuests }}</p>
+            <p><strong>Total Price:</strong> {{ booking.totalPrice }} €</p>
+            <p><strong>Booking Status:</strong> {{ booking.bookingStatus }}</p>
           </div>
           <button @click="cancelBooking(booking.id)" class="cancel-button">Cancel Booking</button>
         </li>
@@ -51,6 +52,7 @@ import { ref, watch } from 'vue';
 import axios from 'axios';
 
 const user = ref(null);
+const originalUser = ref(null);
 const bookings = ref([]);
 const error = ref(null);
 const phoneNumberError = ref(false);
@@ -122,7 +124,7 @@ const updateUserInfo = async () => {
       },
     });
     alert('User information updated successfully');
-    window.location.reload(); 
+    sessionStorage.setItem('user', JSON.stringify(updatedUser));
     await fetchUserData();
   } catch (err) {
     console.error('Error updating user info:', err);
@@ -248,7 +250,7 @@ fetchUserData();
   color: white;
   border: none;
   cursor: pointer;
-  margin-bottom: 10px; /* Adjusted to move button above Change Password */
+  margin-bottom: 10px;
   margin-right: 10px; 
 }
 

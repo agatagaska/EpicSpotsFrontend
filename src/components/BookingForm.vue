@@ -103,7 +103,9 @@ export default {
           console.log('Error response data:', error.response.data);
           console.log('Error response status:', error.response.status);
           console.log('Error response headers:', error.response.headers);
-          if (error.response.data.errors) {
+          if (error.response.status === 409) {
+            this.bookingError = 'The selected dates are already booked. Please choose different dates.';
+          } else if (error.response.data.errors) {
             this.bookingError = `Booking failed: ${Object.values(error.response.data.errors).flat().join(', ')}`;
           } else {
             this.bookingError = error.response.data.message || 'Booking failed. Please try again.';

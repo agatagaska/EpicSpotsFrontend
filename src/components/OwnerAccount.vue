@@ -19,7 +19,6 @@
           <label><strong>New Password:</strong> <input v-model="newPassword" type="password" class="input-field" /></label>
           <button @click="updatePassword" class="update-password-button">Update Password</button>
         </div>
-        <!--<button @click="deleteAccount" class="delete-button">Delete Account</button>-->
       </div>
       <div v-else class="loading">
         <p>Loading account details...</p>
@@ -33,7 +32,7 @@
   import axios from 'axios';
   
   const user = ref(null);
-  const bookings = ref([]);
+  const originalUser = ref(null);
   const error = ref(null);
   const phoneNumberError = ref(false);
   const currentPasswordError = ref(false);
@@ -47,43 +46,13 @@
       const userData = sessionStorage.getItem('user');
       if (userData) {
         user.value = JSON.parse(userData);
-        await fetchUserBookings(user.value.id);
+        originalUser.value = { ...user.value };
       } else {
         error.value = 'User data not found. Please log in again.';
       }
     } catch (err) {
       console.error('Error fetching data:', err);
       error.value = 'Failed to fetch user data. Please try again later.';
-    }
-  };
-  
-  const fetchUserBookings = async (userId) => {
-    try {
-      const token = sessionStorage.getItem('token');
-      const response = await axios.get(`https://localhost:7063/api/User/${userId}/bookings`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      bookings.value = response.data;
-    } catch (err) {
-      console.error('Error fetching bookings:', err);
-      error.value = 'Failed to fetch bookings. Please try again later.';
-    }
-  };
-  
-  const cancelBooking = async (bookingId) => {
-    try {
-      const token = sessionStorage.getItem('token');
-      await axios.delete(`https://localhost:7063/api/Booking/${bookingId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      bookings.value = bookings.value.filter(booking => booking.id !== bookingId);
-    } catch (err) {
-      console.error('Error canceling booking:', err);
-      error.value = 'Failed to cancel booking. Please try again later.';
     }
   };
   
@@ -104,7 +73,8 @@
         },
       });
       alert('User information updated successfully');
-      window.location.reload();
+      // to correctly fetch updated info
+      sessionStorage.setItem('user', JSON.stringify(updatedUser));
       await fetchUserData();
     } catch (err) {
       console.error('Error updating user info:', err);
@@ -143,34 +113,7 @@
       }
     }
   };
-  
-  const deleteAccount = async () => {
-    try {
-      const token = sessionStorage.getItem('token');
-      await axios.delete(`https://localhost:7063/api/User/${user.value.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert('Account deleted successfully');
-      
-      // Perform logout or redirect to login page
-      sessionStorage.clear();
-      window.location.href = '/login';
-    } catch (err) {
-      console.error('Error deleting account:', err);
-      error.value = 'Failed to delete account. Please try again later.';
-    }
-  };
-  
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-  
+
   const togglePasswordFields = () => {
     showPasswordFields.value = !showPasswordFields.value;
     currentPassword.value = '';

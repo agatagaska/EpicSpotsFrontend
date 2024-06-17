@@ -177,7 +177,7 @@ header .right-nav {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  width: 100%;
+  width: 40%;
   margin-bottom: 1rem;
   margin-right: 1rem;
   font-size: 0.9rem;
@@ -292,17 +292,7 @@ button[disabled] {
   background-color: grey;
   cursor: not-allowed;
 }
-
-.modal-content a {
-  color: #FF385C;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.modal-content a:hover {
-  text-decoration: underline;
-}
-
+/* FOOTER */
 footer {
   display: flex;
   justify-content: center;
@@ -418,6 +408,12 @@ button:focus-visible {
 
 .error {
   color: red;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
 }
 
 @media (prefers-color-scheme: light) {
